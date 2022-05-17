@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+from html.parser import HTMLParser
 from PyQt5.Qt import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import QApplication
@@ -69,11 +70,13 @@ class WebEnginePage(QWebEnginePage):
     def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
         print("javaScriptConsoleMessage: ", level, message, lineNumber, sourceID)
 
+
 class MainWindow(QMainWindow):
 
     #System tray icons.
     #Will initialize in the constructor.
     tray_icon = None
+    notify_saved_message = ""
  
     # Override the class constructor
     def __init__(self, *args, **kwargs):
@@ -82,7 +85,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
 
- 
         self.setMinimumSize(QSize(410, 500))             # Set sizes
         self.setWindowTitle("Infinitrix Desktop App")  # Set a title
 
@@ -103,7 +105,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.web)
  
         # Adding an icon
-        icon = QIcon("icon.png")
+        icon = QIcon("infinitrix.png")
         self.setWindowIcon(icon)
 
         # Init QSystemTrayIcon
@@ -223,33 +225,53 @@ class MainWindow(QMainWindow):
         //Math.floor(Date.now() / 1000);
 
        //elements_infinitrix = document.getElementsByClassName('popup-window');
-       //elements_infinitrix = document.getElementsByClassName('bx-notifier-item-content');
-       elements_infinitrix_date = document.getElementsByClassName('bx-notifier-item-date');
-       elements_infinitrix_name = document.getElementsByClassName('bx-notifier-item-name');
-       elements_infinitrix_text = document.getElementsByClassName('bx-notifier-item-text');
-       [[].map.call(elements_infinitrix_date, elem_infinitrix_date => elem_infinitrix_date.innerHTML),[].map.call(elements_infinitrix_name, elem_infinitrix_name => elem_infinitrix_name.innerHTML),[].map.call(elements_infinitrix_text, elem_infinitrix_text => elem_infinitrix_text.innerHTML)];
+       elements_infinitrix = document.getElementsByClassName('bx-notifier-item-content');
+       data = [].map.call(elements_infinitrix, elem_infinitrix => elem_infinitrix.innerHTML);
+       //elements_infinitrix_date = document.getElementsByClassName('bx-notifier-item-date');
+       //elements_infinitrix_name = document.getElementsByClassName('bx-notifier-item-name');
+       //elements_infinitrix_text = document.getElementsByClassName('bx-notifier-item-text');
+       //[[].map.call(elements_infinitrix_date, elem_infinitrix_date => elem_infinitrix_date.innerHTML),[].map.call(elements_infinitrix_name, elem_infinitrix_name => elem_infinitrix_name.innerHTML),[].map.call(elements_infinitrix_text, elem_infinitrix_text => elem_infinitrix_text.innerHTML)];
 
         '''
         self.web.page().runJavaScript(js_string , self.js_callback)
 
     def js_callback(self, result):
-        notify_str = str(result)
-        notify_array = []
-        notify_brackets=notify_str.replace("[[","").replace("]]","")
-        for notify_line in notify_brackets.split('], ['):
-            notify_row =list(map(str,notify_line.split(", ")))
-            notify_array.append(notify_row)
-        print("PyArray:", notify_array)
+        global notify_saved_message
+        notify_str = result
+        if notify_str:
+             notify_message = notify_str[-1]
+             if notify_message != self.notify_saved_message:
+                 #print("NEW MSG")
+                 print("js_callback: ", notify_message)
+                 #print("saved: ", self.notify_saved_message)
+                 self.notify_saved_message = notify_message
 
-        print("js: infinitrix callback is ",notify_str)
-        #QMessageBox.information (self, "Hint", str(result))
-        #if str(result) != '[]':
-                #self.tray_icon.showMessage(
-                        #"Infinitrix",
-                        #str(result),
-                        #QSystemTrayIcon.Information,
-                        #2000
-                    #)
+                 notify_message = notify_message.replace("</span>", "</span> ").strip()
+                 def strip_html(text):
+                     parts = []
+                     parser = HTMLParser()
+                     parser.handle_data = parts.append
+                     parser.feed(text)
+                     return ''.join(parts)
+
+                 print(strip_html(notify_message))
+                 #QMessageBox.information (self, "Hint", str(result))
+                 self.tray_icon.showMessage(
+                     "Infinitrix",
+                     strip_html(notify_message),
+                     QSystemTrayIcon.Information,
+                     2000
+                     )
+
+
+        #notify_array = []
+        #notify_brackets=notify_str.replace("[[","").replace("]]","")
+        #for notify_line in notify_brackets.split('], ['):
+            #notify_row =list(map(str,notify_line.split(", ")))
+            #notify_array.append(notify_row)
+        #print("PyArray:", notify_array)
+
+        #print("js: infinitrix callback is ",notify_str)
 
 
 class WebEngineView(QWebEngineView):
