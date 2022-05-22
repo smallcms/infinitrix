@@ -408,7 +408,8 @@ class MainWindow(QMainWindow):
         #show tray icon
         self.tray_icon.show()
         #show MainWindow, resize to 401x501 (bug in QT5 with resizing)
-        self.resize(411, 501)
+        #now commented, incorrect size in Linux
+        #self.resize(411, 501)
         self.showMaximized()
         self.web.page().loadFinished.connect(self.run_js_start)
 
