@@ -471,11 +471,6 @@ class MainWindow(QMainWindow):
         }
 
         function addElement() {
-
-            if (window.location.href.indexOf("/desktop_app/?IFRAME=Y") == -1) {
-                window.location.replace(window.location.origin + '/desktop_app/?IFRAME=Y');
-            }
-
             var helloClasses = document.getElementsByClassName("bx-messenger-box-hello");
             if (helloClasses.length > 0) {
                 helloClasses[0].innerHTML = "Welcome to Infinitrix!";
