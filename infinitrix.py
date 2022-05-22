@@ -14,13 +14,6 @@ from PyQt5.QtCore import (QSize, QRectF, Qt, QPropertyAnimation, pyqtProperty,
 from PyQt5.QtGui import QIcon, QDesktopServices, QPainter, QPainterPath, QColor, QPen
 from PyQt5 import QtCore, QtWidgets
 
-#
-# Deplist Ubuntu: sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
-# Deplist Fedora: sudo dnf install python3-qt5 python3-qt5-webengine
-# Deplist openSUSE sudo zypper install python3-qt5 python3-qtwebengine-qt5
-# Deplist ArchLinux: sudo pacman -S python-pyqt5 python-pyqt5-webengine
-#
-
 #Get config from file in user home path
 class CheckConfig():
     home_path = os.path.expanduser("~")
@@ -320,8 +313,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.web)
  
         # Adding an icon
-        icon = QIcon("infinitrix.png")
-        self.setWindowIcon(icon)
+        if QFile.exists('/usr/share/pixmaps/infinitrix.png'):
+            icon = QIcon("/usr/share/pixmaps/infinitrix.png")
+            self.setWindowIcon(icon)
+        else:
+            icon = QIcon("infinitrix.png")
+            self.setWindowIcon(icon)
 
         # Init QSystemTrayIcon
         self.tray_icon = QSystemTrayIcon(self)
@@ -449,16 +446,32 @@ class MainWindow(QMainWindow):
     def run_js_start(self):
         js_string = '''
 
-        if (window.location.href.indexOf("/stream/") > -1) {
-            window.location.replace(window.location.origin + '/desktop_app/?IFRAME=Y');
-          }
+        var countredirect = 0;
 
         var interval = setInterval(function () {
             addElement();
             clearInterval(interval);
         }, 1000);
 
+        var intervalredirect = setInterval(function () {
+            tryRedirect();
+            countredirect++;
+            if (countredirect >= 10) {
+                clearInterval(intervalredirect);
+            }
+        }, 1000);
+
+        function tryRedirect() {
+            if (window.location.href.indexOf("/desktop_app/?IFRAME=Y") == -1) {
+                window.location.replace(window.location.origin + '/desktop_app/?IFRAME=Y');
+            }
+        }
+
         function addElement() {
+
+            if (window.location.href.indexOf("/desktop_app/?IFRAME=Y") == -1) {
+                window.location.replace(window.location.origin + '/desktop_app/?IFRAME=Y');
+            }
 
             var helloClasses = document.getElementsByClassName("bx-messenger-box-hello");
             if (helloClasses.length > 0) {
