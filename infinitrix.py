@@ -465,7 +465,7 @@ class MainWindow(QMainWindow):
         }, 1000);
 
         function tryRedirect() {
-            if (window.location.href.indexOf("/desktop_app/?IFRAME=Y") == -1) {
+            if (window.location.href.indexOf("/stream/") > -1) {
                 window.location.replace(window.location.origin + '/desktop_app/?IFRAME=Y');
             }
         }
