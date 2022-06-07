@@ -31,7 +31,7 @@ class CheckConfig():
             quit()
     else:
         ini_contents['main'] = {}
-        ini_contents['main']['url'] = 'https://example.com'
+        ini_contents['main']['url'] = ''
         ini_contents['main']['closetotray'] = '1'
         ini_contents['main']['sysnotify'] = '0'
         with open(ini_path, 'w') as ini_contentsfile:
@@ -46,11 +46,13 @@ class ConfigWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.resize(300, 150)
+        self.center()
         self.inputLabel = QLabel("Input bitrix24 URL")
         if CheckConfig.ini_contents.has_option("main", "url"):
             self.url_editLine = QLineEdit(CheckConfig.ini_contents['main']['url'])
         else:
-            self.url_editLine = QLineEdit("https://example.com")
+            self.url_editLine = QLineEdit("")
 
         self.url_editLine.setFixedWidth(300)
 
@@ -104,12 +106,18 @@ class ConfigWindow(QWidget):
         self.setWindowTitle('Infinitrix options')
         self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowMinMaxButtonsHint)
 
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def saveSettings(self):
         url_Value_Layout = self.url_editLine.text()
 
         if url_Value_Layout == '':
             QMessageBox.information(self, "Empty url", "Please enter the bitrix24 url.")
+            return None
 
         home_path = os.path.expanduser("~")
         ini_path = home_path + '/.infinitrix.ini'
@@ -407,11 +415,15 @@ class MainWindow(QMainWindow):
 
         #show tray icon
         self.tray_icon.show()
-        #show MainWindow, resize to 401x501 (bug in QT5 with resizing)
-        #now commented, incorrect size in Linux
-        #self.resize(411, 501)
-        self.showMaximized()
-        self.web.page().loadFinished.connect(self.run_js_start)
+
+        if CheckConfig.ini_contents['main']['url'] == '':
+            self.show_settings_window()
+        else:
+            #show MainWindow, resize to 401x501 (bug in QT5 with resizing)
+            #now commented, incorrect size in Linux
+            #self.resize(411, 501)
+            self.showMaximized()
+            self.web.page().loadFinished.connect(self.run_js_start)
 
         #Fix maximized window width (not elegant solution)
         #QTimer.singleShot(5000, lambda: self.web.page().runJavaScript('window.location.reload(false);'))
@@ -437,7 +449,6 @@ class MainWindow(QMainWindow):
                     QSystemTrayIcon.Information,
                     2000
                 )
-
 
     #Show settings window
     def show_settings_window(self):
@@ -480,6 +491,7 @@ class MainWindow(QMainWindow):
 
         }
         '''
+
         self.web.page().runJavaScript(js_string)
 
     #Javascript with callback to check notifications
