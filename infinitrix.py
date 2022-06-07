@@ -134,8 +134,8 @@ class ConfigWindow(QWidget):
             ini_contents['main']['sysnotify'] = '0'
         with open(CheckConfig.ini_path, 'w') as ini_contentsfile:
             ini_contents.write(ini_contentsfile)
-        QMessageBox.information(self, "Settings saved!", "Please restart the application.")
         self.close()
+        MainWindow.restart()
 
     def cancelSettings(self):
         self.close()
@@ -369,6 +369,7 @@ class MainWindow(QMainWindow):
                 print("quit")
                 #app.quit()
                 del self.web
+                del self.tray_icon
                 quit()
                 print("sys quit")
                 sys.exit(app.exec_())
@@ -435,6 +436,9 @@ class MainWindow(QMainWindow):
 
 
     # MainWindow functions
+
+    def restart():            
+        return QApplication.exit( app_exit_code ) 
 
     # Override closeEvent, to intercept the window closing event
     # The window will be closed only if there is no check mark in the check box
@@ -544,11 +548,20 @@ class WebEngineView(QWebEngineView):
 
  
 if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    app.setApplicationName("infinitrix")
-    CheckConfig()
-    main_window = MainWindow()
-    app.quit()
-    del main_window
-    sys.exit(app.exec())
+    app_exit_code = -123456781
+    exit_code = 0
+    while True:
+        try:
+            app = QApplication(sys.argv)
+        except RuntimeError:
+            app = QCoreApplication.instance()
+        app.setApplicationName("infinitrix")
+        CheckConfig()
+        MainWindow()
+        exit_code = app.exec_()
+        del app
+        os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
+        if exit_code != app_exit_code:
+            break 
+    del app
+    sys.exit(app.exec_())
