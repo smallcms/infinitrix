@@ -14,7 +14,7 @@ Supported features:
 ##### RPMs
 - Centos 8, 9
 - EPEL 7, 8, 9
-- Fedora 34, 35, 36, rawhide, eln
+- Fedora 34, 35, 36, rawhide
 - Mageia 8, cauldron
 - Openmandriva cooker
 - Openmandriva rolling
