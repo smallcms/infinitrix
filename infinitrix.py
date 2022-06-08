@@ -237,13 +237,13 @@ class BubbleLabel(QWidget):
         opacityAnimation.setEndValue(0.0)
         # Set the animation curve
         opacityAnimation.setEasingCurve(QEasingCurve.InQuad)
-        opacityAnimation.setDuration(4000)  
+        opacityAnimation.setDuration(6000)  
         # Moving up animation
         moveAnimation = QPropertyAnimation(self, b"pos")
         moveAnimation.setStartValue(startPos)
         moveAnimation.setEndValue(endPos)
         moveAnimation.setEasingCurve(QEasingCurve.InQuad)
-        moveAnimation.setDuration(5000)  
+        moveAnimation.setDuration(7000)  
         # Parallel animation group (the purpose is to make the two animations above simultaneously)
         self.animationGroup = QParallelAnimationGroup(self)
         self.animationGroup.addAnimation(opacityAnimation)
@@ -437,8 +437,9 @@ class MainWindow(QMainWindow):
 
     # MainWindow functions
 
-    def restart():            
-        return QApplication.exit( app_exit_code ) 
+    #Restart function
+    def restart():
+        return QApplication.exit( app_exit_code )
 
     # Override closeEvent, to intercept the window closing event
     # The window will be closed only if there is no check mark in the check box
@@ -451,7 +452,7 @@ class MainWindow(QMainWindow):
                     "Infinitrix",
                     "Infinitrix was minimized to Tray",
                     QSystemTrayIcon.Information,
-                    2000
+                    10000
                 )
 
     #Show settings window
@@ -531,7 +532,7 @@ class MainWindow(QMainWindow):
                              "Infinitrix",
                              strip_html(msg),
                              QSystemTrayIcon.Information,
-                             2000
+                             5000
                              )
                      else:
                          if hasattr(self, "_blabel"):
