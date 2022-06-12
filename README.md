@@ -22,9 +22,18 @@ Supported features:
 - openSUSE Leap 15.3
 - openSUSE Tumbleweed
 
-Visit [Fedora COPR](https://copr.fedorainfracloud.org/coprs/smallcms/infinitrix/) and setup repo for your distro.
+Visit [Fedora COPR](https://copr.fedorainfracloud.org/coprs/smallcms/infinitrix/), setup repo for your distro and install messenger:
+```plain
+sudo dnf copr enable smallcms/infinitrix
+sudo dnf install infinitrix
+```
 
 ##### DEBs
 - Ubuntu 18.04, 20.04, 21.10, 22.04, 22.10
 
-Visit [Launchpad PPA](https://launchpad.net/~freebsdhosting/+archive/ubuntu/infinitrix) and setup repo for your distro.
+Visit [Launchpad PPA](https://launchpad.net/~freebsdhosting/+archive/ubuntu/infinitrix), setup repo for your distro and install messenger:
+```bash
+sudo add-apt-repository ppa:freebsdhosting/infinitrix
+sudo apt-get update
+sudo apt-get install infinitrix
+```
