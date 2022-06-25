@@ -4,6 +4,12 @@
 import sys
 import os
 import time
+try:
+    from ctypes import windll  # Only exists on Windows.
+    myappid = u'smallcms.infinitrix.app.current'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except ImportError:
+    pass
 import configparser
 from html.parser import HTMLParser
 from PyQt5.Qt import *
@@ -557,8 +563,9 @@ if __name__ == "__main__":
         except RuntimeError:
             app = QCoreApplication.instance()
         app.setApplicationName("infinitrix")
+        app.setDesktopFileName("infinitrix")
         CheckConfig()
-        MainWindow()
+        mainwindow=MainWindow()
         exit_code = app.exec_()
         del app
         os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
