@@ -460,6 +460,15 @@ class MainWindow(QMainWindow):
                     QSystemTrayIcon.Information,
                     10000
                 )
+            else:
+                event.accept()
+                print("quit")
+                #app.quit()
+                del self.web
+                del self.tray_icon
+                quit()
+                print("sys quit")
+                sys.exit(app.exec_())
 
     #Show settings window
     def show_settings_window(self):
