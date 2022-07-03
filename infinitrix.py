@@ -4,6 +4,7 @@
 import sys
 import os
 import time
+import gc
 try:
     from ctypes import windll  # Only exists on Windows.
     myappid = u'smallcms.infinitrix.app.current'
@@ -557,6 +558,7 @@ class MainWindow(QMainWindow):
                          self._blabel = BubbleLabel()
                          self._blabel.setText(msg)
                          self._blabel.show()
+        gc.collect()
 
 
 class WebEngineView(QWebEngineView):
